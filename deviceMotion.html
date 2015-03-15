@@ -1,0 +1,86 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>无标题文档</title>
+<style type="text/css">
+	html,body{ width:100%; height:100%;}
+</style>
+</head>
+
+<body>
+123
+<div id="box" style="background:#F00; width:100px; height:50px; position:absolute; left:50%; top:50%; display:none;"></div>
+<script>
+	//
+	//
+	//
+	//
+	
+	var divDom = document.getElementById("box")
+	document.body.onclick = function(){
+		divDom.style.display = "none"
+	}
+	!(function(){
+		function MobileShake(options){
+			this.SHAKE_THRESHOLD = 1500;
+			this.x = this.y = this.z = this.lateX = this.lateY = this.lateZ = this.lateUpdate = 0;
+			this.callBack = function(){
+				options.callBack()
+			}
+		}
+		MobileShake.prototype = {
+			constuctor:MobileShake,
+			
+			// 初始化事件，绑定监听加速事件
+			init:function(){
+				var that = this
+				if(window.DeviceMotionEvent){
+					window.addEventListener("devicemotion",function(eventData){
+						that.active(eventData)
+					},false)
+				}else{
+					document.body.innerHTML = "你的浏览器不支持摇一摇"
+				}
+			},
+			active:function(eventData){
+				//var that = this
+				
+						
+				var acceleration = eventData.accelerationIncludingGravity;
+				var curTime = new Date().getTime();
+				var diffTime = curTime - this.lateUpdate;
+				if(diffTime > 100){
+					this.lateUpdate = curTime
+					
+					this.x = acceleration.x
+					this.y = acceleration.y
+					this.z = acceleration.z
+					
+					var speed = Math.abs(this.x+this.y+this.z-this.lateX-this.lateY-this.lateZ) / diffTime * 10000;
+					if(speed >　this.SHAKE_THRESHOLD){
+						this.callBack()
+					}
+					this.lateX = this.x
+					this.lateY = this.y
+					this.lateZ = this.z
+				}
+			},
+			debug:function(text){
+				var p = document.createElement("p")
+					p.innerHTML = text
+					document.body.appendChild(p)
+			}
+		}
+		var m = new MobileShake({
+			callBack:function(){
+				divDom.style.display = "block"
+			}
+			
+		})
+		m.init()
+	})()
+</script>
+</body>
+</html>
